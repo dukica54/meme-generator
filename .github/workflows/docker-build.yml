@@ -1,0 +1,29 @@
+
+name: Docker Build Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Build Docker image
+      run: docker build -t meme-generator .
+    
+    - name: Test image exists
+      run: docker images | grep meme-generator
+    
+    - name: Run container test
+      run: |
+        docker run -d -p 5000:5000 --name test-meme meme-generator
+        sleep 5
+        docker ps | grep test-meme
+        docker stop test-meme
